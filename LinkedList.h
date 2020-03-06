@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#define DEBUG   false
+
 struct LinkedListNode {
   struct LinkedListNode* next;
   int numer;
@@ -21,6 +23,8 @@ void swapListNode(ListNode* nodeA, ListNode* nodeB);
 bool PermuteList();
 #endif
 
+void SwapOperands(ListNode *nodeA, ListNode *nodeB);
+
 void LoadBackupList();
 void StoreBackupList();
 int BackupListSize();
@@ -32,7 +36,9 @@ int ListSize(void);
 ListNode* CreateListNode(int inNumer, int inDenom);
 void addListNode(int inNumer, int inDenom);
 int  removeListNode(int listIdx);
+void printLinkedListItems(void);
 void printLinkedList(void);
 void clearLinkedList(void);
-
+void clearBackupLinkedList(void);
+int removeBackupListNode(int backupListIdx);
 #endif

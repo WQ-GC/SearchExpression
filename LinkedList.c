@@ -1,6 +1,5 @@
 #include "LinkedList.h"
 
-#if 0
 ListNode* GetPrevNode(ListNode* inNode) {
   //printf("\n\ninNode: %p", inNode);
   ListNode* ptr = llHeadPtr;
@@ -21,91 +20,71 @@ ListNode* GetPrevNode(ListNode* inNode) {
   return prevPtr;
 }
 
-void swapListNode(ListNode* nodeA, ListNode* nodeB) {
-  ListNode* ptrA = nodeA;
-  ListNode* ptrB = nodeB;
-  ListNode* prevPtrA = GetPrevNode(nodeA);
-  ListNode* prevPtrB = GetPrevNode(nodeB);
+void SwapOperands(ListNode *nodeA, ListNode *nodeB) { 
+  if(nodeA == nodeB) 
+    return;//no need to swop
 
-  if(nodeA == nodeB)
-    return;
+  ListNode* nodeAPrev = GetPrevNode(nodeA);
+  ListNode* nodeBPrev = GetPrevNode(nodeB);
 
-  //HeadPtrs
-  else if(nodeA == llHeadPtr) {
-    llHeadPtr = nodeB;
+  if(nodeAPrev == NULL) {
+  //nodeA is head
+    //nodeAPrev stores nodeA's prev (but since it is head, it is NULL)
+    //nodeBPrev stores nodeB's prev
 
+    //Link the prev nodes
+    nodeBPrev->next = nodeA;
+    setLinkedListHead(nodeB);
 
+    ListNode* tempPtr = nodeA->next;
+    nodeA->next = nodeB->next;
+    nodeB->next = tempPtr;
   }
-  else if(nodeB == llHeadPtr) {
-    llHeadPtr = nodeA;
 
+  else if(nodeBPrev == NULL) {
+  //nodeB is head
+    nodeAPrev->next = nodeB;
+    setLinkedListHead(nodeA);
+
+    ListNode* tempPtr = nodeB->next;
+    nodeB->next = nodeA->next;
+    nodeA->next = tempPtr;
   }
 
-  else{
-  //General Case
-    printf("\n\n=======================");
-    printf("\nprevPtrA: %p", GetPrevNode(nodeA));
-    printf("\nnodeA: %p", nodeA);
-    printf("\nnodeA->next: %p", nodeA->next);
+  else {
+    nodeAPrev->next = nodeB; 
+    nodeBPrev->next = nodeA; 
 
-    printf("\n\nprevPtrB: %p", GetPrevNode(nodeB));
-    printf("\nnodeB: %p", nodeB);
-    printf("\nnodeB->next: %p", nodeB->next);
-
-    ListNode* prevA = GetPrevNode(nodeA);
-    ListNode* prevB = GetPrevNode(nodeB);
-    ListNode* tempNodeANext = nodeA->next;
-    ListNode* tempNodeBNext = nodeB->next;
-
-    nodeB->next = tempNodeANext;
-    nodeA->next = tempNodeBNext;
-
-    prevA->next = nodeB;
-    prevB->next = nodeA;
-
-    printf("\n\n=======================");
-    printf("\nprevPtrA: %p", GetPrevNode(nodeA));
-    printf("\nnodeA: %p", nodeA);
-    printf("\nnodeA->next: %p", nodeA->next);
-
-    printf("\n\nprevPtrB: %p", GetPrevNode(nodeB));
-    printf("\nnodeB: %p", nodeB);
-    printf("\nnodeB->next: %p", nodeB->next);
-
-#if 0
-    printf("\nprevPtrA->next: %p", prevPtrA->next);
-    printf("\nnodeB: %p", nodeB);
-    prevPtrA->next = nodeB;
-
-    printf("\npnodeA->next: %p", nodeA->next);
-    printf("\ntempListNodeB.next: %p", tempListNodeB.next);
-    nodeA->next = tempListNodeB.next;
-
-    printf("\nprevPtrB->next: %p", prevPtrB->next);
-    printf("\nnodeA: %p", nodeA);
-    prevPtrB->next = nodeA;
-
-#endif
+    ListNode* tempPtr = nodeB;
+    ListNode temp;
+    temp.next = nodeB->next;
+    nodeB->next = nodeA->next;
+    nodeA->next = temp.next;
   }
+
+  //printLinkedList();
 }
-
-bool PermuteList() {
-}
-#endif
-
 
 //Copy Load BackupList data into Active List
 void LoadBackupList() {
   int count = 0;
-
+#if DEBUG  
+//  printf("\nReload Backup: ");
+#endif
   ListNode* ptr = llBackupHeadPtr;
   while(count < BackupListSize()) {
     //printf("\nBackup ptr: %p", ptr);
     //printf("\nBackup ptr->numer: %p   %p", ptr->numer, ptr->denom);
     addListNode(ptr->numer, ptr->denom);
+#if DEBUG  
+    //printf("%i ",ptr->numer);    
+#endif
     ptr = ptr->next;
     count++;
   }
+#if DEBUG
+//  printf("\n");
+#endif  
 }
 
 int BackupListSize() {
@@ -125,10 +104,15 @@ int BackupListSize() {
 
 void StoreBackupList() {
   int count = 0;
+#if DEBUG  
+  printf("\nBackup: ");
+#endif
   while(count < ListSize()) {
     ListNode* newPtr;
     newPtr = CreateListNode(getListNode(count)->numer, getListNode(count)->denom);
-
+#if DEBUG  
+    printf("%i  ", newPtr->numer);
+#endif
     //printf("\n");
     if (llBackupHeadPtr == NULL){
       llBackupHeadPtr = newPtr;
@@ -307,6 +291,22 @@ int removeListNode(int listIdx){
   return reval;
 }
 
+void printLinkedListItems(void) {
+  ListNode* ptr = getLinkedListHead();
+  if (ptr == NULL){
+    printf("\nOperands List Empty\n");
+  } 
+  else {
+  printf("\n");
+    int count = 0;
+    while(count <= ListSize() - 1) {
+      printf("%i ", ptr->numer);
+      ptr = ptr->next;
+      count++;
+    }
+  }
+}
+
 void printLinkedList(void) {
   ListNode* ptr = getLinkedListHead();
   if (ptr == NULL){
@@ -314,12 +314,12 @@ void printLinkedList(void) {
   } 
   else {
     printf("\n\nOperands llist:");
-    printf("\nllHeadptr: %p", getLinkedListHead());
     printf("\nOperands size: %i", ListSize());
+    printf("\nllHeadptr: %p", getLinkedListHead());
     int count = 0;
     while(count <= ListSize() - 1) {
       //printf("%i:   %i\n", count, ptr->nodeData);
-      printf("\n%p:   %i/%i", ptr, ptr->numer, ptr->denom);
+      printf("\n%p  %p  %p: %i/%i", GetPrevNode(ptr), ptr, ptr->next , ptr->numer, ptr->denom);
 
       ptr = ptr->next;
       count++;
@@ -340,3 +340,88 @@ void clearLinkedList(void) {
   }
 }
 
+void clearBackupLinkedList(void) {
+  if(llBackupHeadPtr == NULL) {
+    return;
+  }
+  else {
+    int count = BackupListSize();
+    while(count != 0) {
+      removeBackupListNode(count-1);
+      count--;
+    }
+  }
+}
+
+//Removes a ListNode from LinkedList
+int removeBackupListNode(int backupListIdx){
+  ListNode* ptr;
+  int reval = 0;
+
+  if (llBackupHeadPtr == NULL){
+    printf("\nBackup Operands List empty, unable to delete.\n");
+    reval = 0;
+  }
+
+  else if(backupListIdx > BackupListSize() - 1) {
+    printf("\nBackup List index out of range, unable to delete\n");
+    reval = -1;
+  }
+
+  //Within normal range
+  else {
+    if(backupListIdx == 0) {   
+      //Remove from first Node 
+      ptr = llBackupHeadPtr;
+      ListNode* nextPtr = ptr->next;//get nextNode
+      if(nextPtr == NULL) {
+        //only 1 node in list
+        free(ptr);
+        ptr = NULL;
+        llBackupHeadPtr = NULL;
+      }
+      else {
+        llBackupHeadPtr = nextPtr;//update Head
+        free(ptr);
+        ptr = NULL;
+      }      
+    }
+
+    else if(backupListIdx == BackupListSize() -1) {
+      //remove from last element
+      //traverse to last element
+      int counter = 0;
+      ListNode* prevPtr = llBackupHeadPtr;
+      while(counter != BackupListSize() -2) {
+        prevPtr = prevPtr->next;
+        counter++;
+      }
+      free(prevPtr->next);
+      prevPtr->next = NULL;
+    }
+
+    else {
+      //traverse idx and link
+      int counter = 0;
+      ListNode* prevPtr = NULL;
+      ListNode* ptr = llBackupHeadPtr;
+      while(counter < (backupListIdx)) {
+        prevPtr = ptr;
+        ptr = ptr->next;
+        counter++;
+      }
+
+      if(prevPtr == NULL) {
+        //prevPtr does not exist for Head
+        printf("prevPtr does not exist for head");
+      }
+      else {
+        //link prev to next
+        prevPtr->next = ptr->next;
+        free(ptr);
+        ptr = NULL;
+      }
+    }
+  }
+  return reval;
+}

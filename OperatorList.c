@@ -461,10 +461,10 @@ void printFullExpression(void *outExpression) {
     //printf("\nOperator size: %i", OpListSize());
   }
   else if (ptr != NULL) {
-    printf("   -   Expression: ");
+    //printf("   -   Expression: ");
     int count = 0;
 
-    while(count <= OpListSize() - 1) {
+      while(count <= OpListSize() - 1) {
       ////printf("%i/%i  %c  ", ptr->leftOperand->numer, ptr->leftOperand->denom, DecodeOpSymbol(ptr));
       sprintf(str, "%i %c ",ptr->leftOperand->numer, DecodeOpSymbol(ptr));
       strcat(outExpression, str);

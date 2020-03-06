@@ -7,7 +7,7 @@
 #include <math.h>
 #include "OperatorList.h"
 
-void HandleOperandsPermutations();
+void PermuteOperands(int l, int r);
 void DecodeOpCount(int numOperators, int inMaxCount, int inCount, OPType* outOpArr);
 int ComputeMaxMap(int inputVar);
 
